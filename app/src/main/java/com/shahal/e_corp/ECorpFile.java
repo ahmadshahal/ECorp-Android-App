@@ -141,8 +141,8 @@ public class ECorpFile {
 
     public String nameFormatted() {
         String theName = this.fileName;
-        if (theName.length() > 33) {
-            theName = theName.substring(0, theName.length() - 3);
+        if (theName.length() > 31) {
+            theName = theName.substring(0, 29);
             theName += "..";
             return theName;
         } else
@@ -151,7 +151,9 @@ public class ECorpFile {
 
     public String sizeFormatted() {
         double theSize = (double) this.size / 1000000;
-        if (theSize < 1)
+        if (theSize < 0.001)
+            return String.format("%d B", (int) (theSize * 1000000));
+        else if (theSize < 1)
             return String.format("%.3g KB", theSize * 1000);
         else if (theSize > 1 && theSize < 1000)
             return String.format("%.3g MB", theSize);
