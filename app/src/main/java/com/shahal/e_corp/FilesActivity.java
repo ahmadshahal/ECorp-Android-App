@@ -3,6 +3,7 @@ package com.shahal.e_corp;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,7 +15,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +25,8 @@ import retrofit2.Retrofit;
 
 public class FilesActivity extends AppCompatActivity {
 
-    List<ECorpFile> filesList = new ArrayList<>();
+    private List<ECorpFile> filesList = new ArrayList<>();
+    private SwipeRefreshLayout swipeRefreshLayout;
 
 
 //                filesList.add(new ECorpFile("Unassigned", "Microsoft Office 2016 AIO Final.iso", "Microsoft Office 2016 AIO Final", "iso", 54523123, 5200000000L));
@@ -53,6 +54,27 @@ public class FilesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_files);
         getSupportActionBar().setElevation(0);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipRefresh);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.button_color));
+        swipeRefreshLayout.setRefreshing(true);
+        swipeRefreshLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                makeACall();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }, 1000);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                makeACall();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+    }
+
+    public void makeACall() {
         GetDataAPI service = RetrofitCreation.getRetrofitInstance().create(GetDataAPI.class);
         Call<List<ECorpFile>> call = service.getAllFiles();
         call.enqueue(new Callback<List<ECorpFile>>() {
@@ -61,7 +83,6 @@ public class FilesActivity extends AppCompatActivity {
                 filesList = response.body();
                 ListView listView = findViewById(R.id.listView);
                 listView.setAdapter(new MyAdapter(FilesActivity.this, filesList));
-                Toast.makeText(FilesActivity.this, "Successful", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -72,7 +93,6 @@ public class FilesActivity extends AppCompatActivity {
                 Toast.makeText(FilesActivity.this, "Unable to load files", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     class MyAdapter extends ArrayAdapter<ECorpFile> {
