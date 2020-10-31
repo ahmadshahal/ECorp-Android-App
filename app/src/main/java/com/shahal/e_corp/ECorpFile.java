@@ -150,15 +150,14 @@ public class ECorpFile {
     }
 
     public String sizeFormatted() {
-        double theSize = (double) this.size / 1000000;
-        if (theSize < 0.001)
-            return String.format("%d B", (int) (theSize * 1000000));
-        else if (theSize < 1)
-            return String.format("%.3g KB", theSize * 1000);
-        else if (theSize > 1 && theSize < 1000)
-            return String.format("%.3g MB", theSize);
+        if (this.size < 1000)
+            return String.format("%.3g B", (double) this.size);
+        else if (this.size < 1000000)
+            return String.format("%.3g KB", (double) this.size / 1000.0);
+        else if (this.size < 1000000000)
+            return String.format("%.3g MB", (double) this.size / 1000000.0);
         else
-            return String.format("%.2g GB", theSize / 1000);
+            return String.format("%.3g GB", (double) this.size / 1000000000.0);
     }
 
     public String dateFormatted() {
