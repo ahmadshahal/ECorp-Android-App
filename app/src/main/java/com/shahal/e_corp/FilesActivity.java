@@ -1,6 +1,7 @@
 package com.shahal.e_corp;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -61,9 +62,9 @@ public class FilesActivity extends AppCompatActivity {
             @Override
             public void run() {
                 makeACall();
-                swipeRefreshLayout.setRefreshing(false);
             }
         }, 1000);
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -71,7 +72,6 @@ public class FilesActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         makeACall();
-                        swipeRefreshLayout.setRefreshing(false);
                     }
                 }, 500);
             }
@@ -85,19 +85,15 @@ public class FilesActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<ECorpFile>>() {
             @Override
             public void onResponse(Call<List<ECorpFile>> call, Response<List<ECorpFile>> response) {
-//                try{
-//                    Thread.sleep(10000);
-//                }catch (Exception ex)
-//                {
-//
-//                }
                 filesList = response.body();
                 ListView listView = findViewById(R.id.listView);
+                swipeRefreshLayout.setRefreshing(false);
                 listView.setAdapter(new MyAdapter(FilesActivity.this, filesList));
             }
 
             @Override
             public void onFailure(Call<List<ECorpFile>> call, Throwable t) {
+                swipeRefreshLayout.setRefreshing(false);
                 System.out.println("=====================================\n");
                 t.printStackTrace();
                 System.out.println("\n=======================================");
