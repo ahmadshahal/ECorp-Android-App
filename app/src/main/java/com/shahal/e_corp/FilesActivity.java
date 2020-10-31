@@ -67,8 +67,13 @@ public class FilesActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                makeACall();
-                swipeRefreshLayout.setRefreshing(false);
+                swipeRefreshLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        makeACall();
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 500);
             }
         });
 
@@ -80,6 +85,12 @@ public class FilesActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<ECorpFile>>() {
             @Override
             public void onResponse(Call<List<ECorpFile>> call, Response<List<ECorpFile>> response) {
+//                try{
+//                    Thread.sleep(10000);
+//                }catch (Exception ex)
+//                {
+//
+//                }
                 filesList = response.body();
                 ListView listView = findViewById(R.id.listView);
                 listView.setAdapter(new MyAdapter(FilesActivity.this, filesList));
